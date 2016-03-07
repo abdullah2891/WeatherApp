@@ -32,10 +32,10 @@ public class detailView extends AppCompatActivity {
             forecast = new JSONObject(rawData);
             JSONArray list = forecast.getJSONArray("list");
             JSONObject hour = list.getJSONObject(Integer.valueOf(position));
-            String pressure = "PRESSURE "+hour.optString("pressure");
-            String humidity = "HUMIDITY "+hour.optString("humidity");
-            JSONObject temperature = hour.getJSONObject("temp");
-            String temp = temperature.optString("day")+"*C";
+            JSONObject main = hour.getJSONObject("main");
+            String pressure = "PRESSURE "+main.optString("pressure");
+            String humidity = "HUMIDITY "+main.optString("humidity");
+            String temp ="TEMPERATURE "+main.optString("temp")+"*C";
             Log.i("json",temp+pressure+humidity);
 
             txtView = (TextView) findViewById(R.id.temperature);txtView.setText(temp);

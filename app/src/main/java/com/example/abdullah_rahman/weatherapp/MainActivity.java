@@ -33,19 +33,70 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
-    String apiUrl = "http://api.openweathermap.org/data/2.5/forecast/daily?q=Dhaka&mode=json&units=metric&cnt=7&appid=44db6a862fba0b067b1930da0d769e98";
+public class MainActivity extends AppCompatActivity implements LocationListener{
+    String apiUrl = "http://api.openweathermap.org/data/2.5/forecast?lat=35&lon=139&appid=44db6a862fba0b067b1930da0d769e98";
     LocationManager locationManager;
     String provider;
+    TextView current;
+    float latt;
+    float lng;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        provider= locationManager.getBestProvider(criteria,false);
+        Location location = locationManager.getLastKnownLocation(provider);
         DownloadTask task = new DownloadTask();
-        task.execute(apiUrl);
+        if(location!=null) {
+            onLocationChanged(location);
+            task.execute("http://api.openweathermap.org/data/2.5/forecast?lat=" + String.valueOf(latt) + "&lon=" + String.valueOf(lng) + "&appid=44db6a862fba0b067b1930da0d769e98");
+
+        }else{
+            Log.i("error","failed");
+        }
+        Log.i("position", String.valueOf(latt) + " " + String.valueOf(lng));
+
+
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        locationManager.requestLocationUpdates(provider,400,1,this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        locationManager.removeUpdates(this);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        latt =(float) location.getLatitude();
+        lng = (float) location.getLongitude();
+
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
 
 
     public class DownloadTask extends AsyncTask<String,Void,String>{
@@ -67,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                     rawData+=(char)data;
                     data = reader.read();
                 }
+                Log.i("data",rawData);
                 return rawData;
 
 
@@ -98,8 +150,8 @@ public class MainActivity extends AppCompatActivity {
 
                 for (int i=0;i<list.length();i++){
                     JSONObject hour = list.getJSONObject(i);
-                    JSONObject temp = hour.getJSONObject("temp");
-                    String dayTemp = temp.optString("day");
+                    JSONObject main = hour.getJSONObject("main");
+                    String dayTemp = main.optString("temp");
                     JSONArray weather = hour.optJSONArray("weather");
                     JSONObject weatherObj = weather.getJSONObject(0);
                     date.setTime(Long.parseLong(hour.optString("dt"))*1000);
@@ -114,15 +166,15 @@ public class MainActivity extends AppCompatActivity {
                     }
 
 
-                    dateArrayList.add("Date: "+dateString.substring(0, dateString.length() - 24) + "\n" +"FORECAST: "+ weatherObj.optString("description") + "\n" + temp.optString("day") + " C");
+                    dateArrayList.add("Date: "+dateString.substring(0, dateString.length() - 24) + "\n" +"FORECAST: "+ weatherObj.optString("description") + "\n" + dayTemp + " C");
                 }
                 dates = dateArrayList.toArray(new String[dateArrayList.size()]);
 
 
-                TextView current = (TextView)findViewById(R.id.currrent);
+                current = (TextView)findViewById(R.id.currrent);
                 String fullDate = dateArrayList.get(0);
                 int offset = 39;
-                String Display = "CURRENT\n"+fullDate;
+                String Display = "City: "+City+"\n"+fullDate;
 
                 current.setText(Display);
 
