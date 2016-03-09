@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         DownloadTask task = new DownloadTask();
         if(location!=null) {
             onLocationChanged(location);
-            task.execute("http://api.openweathermap.org/data/2.5/forecast?lat=" + String.valueOf(latt) + "&lon=" + String.valueOf(lng) + "&appid=44db6a862fba0b067b1930da0d769e98");
+            task.execute("http://api.openweathermap.org/data/2.5/forecast?lat=" + String.valueOf(latt) + "&lon=" + String.valueOf(lng) + "&units=metric&appid=44db6a862fba0b067b1930da0d769e98");
 
         }else{
             Log.i("error","failed");
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 current = (TextView)findViewById(R.id.currrent);
                 String fullDate = dateArrayList.get(0);
                 int offset = 39;
-                String Display = "City: "+City+"\n"+fullDate;
+                String Display = fullDate;
 
                 current.setText(Display);
 
