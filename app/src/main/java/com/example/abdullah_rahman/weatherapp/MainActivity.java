@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         DownloadTask task = new DownloadTask();
         if(location!=null) {
             onLocationChanged(location);
-            task.execute("http://api.openweathermap.org/data/2.5/forecast?lat=" + String.valueOf(latt) + "&lon=" + String.valueOf(lng) + "&units=metric&appid=44db6a862fba0b067b1930da0d769e98");
-
+            //task.execute("http://api.openweathermap.org/data/2.5/forecast?lat=" + String.valueOf(latt) + "&lon=" + String.valueOf(lng) + "&units=metric&appid=44db6a862fba0b067b1930da0d769e98");
+            task.execute("http://api.openweathermap.org/data/2.5/forecast/daily?lat=" + String.valueOf(latt) +"&lon="+ String.valueOf(lng) + "&units=metric&cnt=10&mode=json&appid=44db6a862fba0b067b1930da0d769e98");
         }else{
             Log.i("error","failed");
         }
@@ -150,8 +150,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
                 for (int i=0;i<list.length();i++){
                     JSONObject hour = list.getJSONObject(i);
-                    JSONObject main = hour.getJSONObject("main");
-                    String dayTemp = main.optString("temp");
+                    JSONObject temp = hour.getJSONObject("temp");
+                    String dayTemp = temp.optString("day");
                     JSONArray weather = hour.optJSONArray("weather");
                     JSONObject weatherObj = weather.getJSONObject(0);
                     date.setTime(Long.parseLong(hour.optString("dt"))*1000);
